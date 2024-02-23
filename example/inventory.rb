@@ -12,8 +12,8 @@ require_relative './graphql_server'
 
 INVENTORY = [
   { upc: '1', in_stock: true },
-  { upc: '2', in_stock: false },
-  { upc: '3', in_stock: true },
+  { upc: '2', in_stock: true },
+  { upc: '3', in_stock: false },
 ].freeze
 
 class Product < BaseObject
@@ -26,8 +26,8 @@ class Product < BaseObject
   field :in_stock, Boolean, null: true
   field :shipping_estimate, Int, null: true, requires: { fields: %i[price weight] }
 
-  def self.resolve_reference(reference, _context)
-    reference.merge(INVENTORY.find { |product| product[:upc] == reference[:upc] })
+  def self.resolve_references(references, _context)
+    references.map { |reference| INVENTORY.find { |product| product[:upc] == reference[:upc] } }.reverse()
   end
 
   def shipping_estimate
